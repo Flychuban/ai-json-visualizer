@@ -17,7 +17,7 @@ This is a full-stack web application built using the **T3 Stack**:
 - **Tailwind CSS**
 - **shadcn/ui**
 - **tRPC**
-- **PostgreSQL**
+- **PostgreSQL from NEON**
 - **Prisma**
 - **NextAuth (email/password + GitHub OAuth)**
 - **AI SDK by Vercel (e.g. OpenAI ) for extracting structured data from natural language**
@@ -87,7 +87,6 @@ This is a full-stack web application built using the **T3 Stack**:
 - Make reasonable assumptions when unspecified or ask follow up questions if you are not 100% sure.
 - Comment complex logic, especially around AI SDK integration or tRPC procedures.
 - Ensure **schema-first development** with Zod for shared types.
-
 ---
 
 ## ✅ Style & Structure Conventions
