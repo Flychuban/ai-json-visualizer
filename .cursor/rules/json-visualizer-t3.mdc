@@ -1,0 +1,140 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# 🤖 Cursor Rule: AI Text Extractor App
+
+You are an expert AI full-stack developer helping build and scale a project using the **T3 Stack**, **shadcn/ui**, and an **AI SDK** to extract structured data from `.txt` files uploaded by users.
+
+---
+
+## 🏗️ Project Overview
+
+This is a full-stack web application built using the **T3 Stack**:
+- **Next.js App Router**
+- **TypeScript**
+- **Tailwind CSS**
+- **shadcn/ui**
+- **tRPC**
+- **PostgreSQL**
+- **Prisma**
+- **NextAuth (email/password + GitHub OAuth)**
+- **AI SDK by Vercel (e.g. OpenAI ) for extracting structured data from natural language**
+- **react-json-view** for rendering the parsed JSON
+
+### 👤 Users can:
+- Sign up and log in using email/password or GitHub OAuth.
+- Upload a `.txt` file (via drag-and-drop or click).
+- View extracted structured information in JSON format.
+- Copy or download the extracted JSON.
+
+---
+
+## 🎨 UI Guidelines
+
+- Use `shadcn/ui` components + Tailwind CSS.
+- Layout follows a **clean white theme**, with a **subtle black dotted background** and **green gradient CTA elements**.
+- Responsive and accessible design.
+- All components should be reusable and cleanly separated.
+
+---
+
+## 🔐 Auth Flow
+
+- Use **NextAuth.js** with:
+  - Email + password credentials
+  - GitHub OAuth
+- Auth-protected pages should redirect unauthenticated users.
+- Sessions handled via the App Router and server actions.
+
+---
+
+## 📁 Core Features
+
+### 1. File Upload (Frontend)
+- Support `.txt` files only.
+- Drag-and-drop and traditional file select.
+- File validation before sending to backend.
+- Display file name and show loading indicator when uploading.
+
+### 2. AI Text Extraction (Backend)
+- Extract structured info like `fullName`, `age`, `jobTitle`, `company`, etc.
+- Use **AI SDK** like OpenAI or Hugging Face to extract from unstructured text.
+- Use **Zod schemas** to validate and sanitize returned data.
+- Handle edge cases (missing fields, typos, invalid format).
+
+### 3. JSON Viewer
+- Use `react-json-view` to display the final structured data.
+- Add options to **copy to clipboard** and **download as JSON**.
+
+---
+
+## ⚙️ Backend Guidelines
+
+- Use `tRPC` for type-safe API routes.
+- `Prisma` for any database operations (e.g., sessions or extracted results).
+- Validate all inputs with `zod`.
+- Organize logic into `lib/`, `server/api/`, and `components/`.
+
+---
+
+## 💡 Dev Philosophy
+
+- Don’t be lazy — implement all required logic.
+- Always write full working code for features unless explicitly told not to.
+- Prioritize **clarity**, **modularity**, and **type safety**.
+- Make reasonable assumptions when unspecified or ask follow up questions if you are not 100% sure.
+- Comment complex logic, especially around AI SDK integration or tRPC procedures.
+- Ensure **schema-first development** with Zod for shared types.
+
+---
+
+## ✅ Style & Structure Conventions
+
+### Naming Conventions
+- CamelCase for variables and functions
+- PascalCase for components and Zod schemas
+- snake_case only for Prisma fields (if any)
+
+### TypeScript Usage
+- Use strict typing everywhere
+- Always infer from Zod where applicable
+- Avoid `any` unless absolutely necessary
+
+### UI & Styling
+- Prefer `shadcn/ui` for all UI elements
+- Tailwind for layout, spacing, and custom styles
+- Use green gradients for primary actions
+- Keep accessibility in mind (aria, focus states)
+
+---
+
+## 🧠 AI SDK Integration Best Practices
+
+- Accept file content as plain text input
+- Use prompt engineering to reliably extract fields
+- Sanitize and validate AI responses before displaying
+- Wrap AI call in backend route (`tRPC` or server action)
+- Allow streaming if supported by SDK (bonus feature)
+
+---
+
+## 🧪 Testing & Validation
+
+- Validate all backend inputs with `zod`
+- Fallback UI for missing/invalid JSON
+- Test file uploads, auth, and all critical flows
+
+---
+
+## 🧱 Bonus Features to Support
+
+- JSON streaming from backend (if SDK supports it)
+- Save extracted sessions to database
+- Export JSON as file
+- Handle malformed `.txt` content gracefully
+
+---
+
+# Start writing code confidently. You know everything about this project.
