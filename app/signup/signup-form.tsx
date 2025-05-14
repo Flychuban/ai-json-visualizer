@@ -7,35 +7,24 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { Github } from "lucide-react"
 import { motion } from "framer-motion"
+import { signIn } from "next-auth/react"
+import bcrypt from "bcryptjs"
 
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { toast } from "@/components/ui/use-toast"
+import { RegisterSchema } from "@/lib/validations/auth"
+import { db } from "@/lib/db"
 
-// Define the form schema
-const formSchema = z.object({
-  name: z.string().min(2, {
-    message: "Name must be at least 2 characters.",
-  }),
-  email: z.string().email({
-    message: "Please enter a valid email address.",
-  }),
-  password: z.string().min(8, {
-    message: "Password must be at least 8 characters.",
-  }),
-})
+type FormValues = z.infer<typeof RegisterSchema>
 
-// Define the form values type
-type FormValues = z.infer<typeof formSchema>
-
-export function SignupForm() {
+export function SignUpForm() {
   const router = useRouter()
   const [isLoading, setIsLoading] = React.useState<boolean>(false)
 
-  // Initialize the form
   const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(RegisterSchema),
     defaultValues: {
       name: "",
       email: "",
@@ -43,20 +32,63 @@ export function SignupForm() {
     },
   })
 
-  // Handle form submission
-  function onSubmit(data: FormValues) {
+  async function onSubmit(data: FormValues) {
     setIsLoading(true)
 
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false)
-      // In a real app, you'd handle registration here
-      router.push("/dashboard")
-      toast({
-        title: "Account created",
-        description: "Welcome to JSONonify!",
+    try {
+      const existingUser = await db.user.findUnique({
+        where: { email: data.email },
       })
-    }, 1500)
+
+      if (existingUser) {
+        toast({
+          title: "Error",
+          description: "User with this email already exists",
+          variant: "destructive",
+        })
+        return
+      }
+
+      const hashedPassword = await bcrypt.hash(data.password, 10)
+
+      await db.user.create({
+        data: {
+          name: data.name,
+          email: data.email,
+          password: hashedPassword,
+        },
+      })
+
+      const result = await signIn("credentials", {
+        email: data.email,
+        password: data.password,
+        redirect: false,
+      })
+
+      if (result?.error) {
+        toast({
+          title: "Error",
+          description: "Something went wrong",
+          variant: "destructive",
+        })
+        return
+      }
+
+      router.push("/dashboard")
+      router.refresh()
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Something went wrong. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleGithubSignUp = () => {
+    signIn("github", { callbackUrl: "/dashboard" })
   }
 
   return (
@@ -102,37 +134,9 @@ export function SignupForm() {
               </FormItem>
             )}
           />
-          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-            <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" disabled={isLoading}>
-              {isLoading ? (
-                <>
-                  <svg
-                    className="mr-2 h-4 w-4 animate-spin"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                  Creating account...
-                </>
-              ) : (
-                "Create account"
-              )}
-            </Button>
-          </motion.div>
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? "Creating account..." : "Create account"}
+          </Button>
         </form>
       </Form>
       <div className="relative">
@@ -143,12 +147,10 @@ export function SignupForm() {
           <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
         </div>
       </div>
-      <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-        <Button variant="outline" type="button" disabled={isLoading} className="w-full">
-          <Github className="mr-2 h-4 w-4" />
-          GitHub
-        </Button>
-      </motion.div>
+      <Button variant="outline" type="button" onClick={handleGithubSignUp} disabled={isLoading}>
+        <Github className="mr-2 h-4 w-4" />
+        GitHub
+      </Button>
     </div>
   )
 }

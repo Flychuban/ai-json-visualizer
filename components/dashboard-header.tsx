@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { LogOut, Settings, User } from "lucide-react"
+import { signOut, useSession } from "next-auth/react"
 
 import {
   DropdownMenu,
@@ -17,9 +18,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 export function DashboardHeader() {
   const router = useRouter()
+  const { data: session } = useSession()
 
-  const handleLogout = () => {
-    // In a real app, you'd handle logout here
+  const handleLogout = async () => {
+    await signOut({ redirect: false })
     router.push("/login")
   }
 
@@ -72,16 +74,16 @@ export function DashboardHeader() {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-8 w-8 rounded-full bg-white/10 hover:bg-white/20">
                 <Avatar className="h-8 w-8 border border-white/20">
-                  <AvatarImage src="/placeholder.svg" alt="User" />
-                  <AvatarFallback>YB</AvatarFallback>
+                  <AvatarImage src={session?.user?.image ?? "/placeholder.svg"} alt={session?.user?.name ?? "User"} />
+                  <AvatarFallback>{session?.user?.name?.charAt(0) ?? "U"}</AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56" align="end" forceMount>
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium leading-none">Yavor Belakov</p>
-                  <p className="text-xs leading-none text-muted-foreground">yavor@example.com</p>
+                  <p className="text-sm font-medium leading-none">{session?.user?.name}</p>
+                  <p className="text-xs leading-none text-muted-foreground">{session?.user?.email}</p>
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />

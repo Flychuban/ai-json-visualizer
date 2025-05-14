@@ -19,6 +19,7 @@ This is a full-stack web application built using the **T3 Stack**:
 - **NextAuth (email/password + GitHub OAuth)**
 - **AI SDK by Vercel (e.g. OpenAI ) for extracting structured data from natural language**
 - **react-json-view** for rendering the parsed JSON
+- ** pnpm package manager 
 
 ### 👤 Users can:
 - Sign up and log in using email/password or GitHub OAuth.
