@@ -22,23 +22,47 @@ export const {
     }),
     Credentials({
       async authorize(credentials) {
-        const validatedFields = LoginSchema.safeParse(credentials)
+        try {
+          console.log("Starting credentials authorization...")
+          
+          const validatedFields = LoginSchema.safeParse(credentials)
 
-        if (validatedFields.success) {
+          if (!validatedFields.success) {
+            console.log("Invalid credentials format:", validatedFields.error)
+            return null
+          }
+
           const { email, password } = validatedFields.data
+          console.log("Looking up user:", email)
 
           const user = await db.user.findUnique({
             where: { email },
           })
 
-          if (!user || !user.password) return null
+          if (!user || !user.password) {
+            console.log("User not found or no password set")
+            return null
+          }
 
+          console.log("Comparing passwords...")
           const passwordsMatch = await bcrypt.compare(password, user.password)
 
-          if (passwordsMatch) return user
-        }
+          if (!passwordsMatch) {
+            console.log("Passwords don't match")
+            return null
+          }
 
-        return null
+          console.log("Authentication successful for user:", user.id)
+          return {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            image: user.image,
+          }
+        } catch (error) {
+          console.error("Auth error:", error)
+          return null
+        }
       },
     }),
   ],

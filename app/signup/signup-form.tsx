@@ -36,50 +36,72 @@ export function SignUpForm() {
     setIsLoading(true)
 
     try {
-      const existingUser = await db.user.findUnique({
-        where: { email: data.email },
-      })
-
-      if (existingUser) {
+      console.log("Starting signup process...")
+      console.log("Form data:", { ...data, password: "[REDACTED]" })
+      
+      // Validate form data
+      const validationResult = RegisterSchema.safeParse(data)
+      if (!validationResult.success) {
+        console.error("Form validation failed:", validationResult.error)
         toast({
-          title: "Error",
-          description: "User with this email already exists",
+          title: "Validation Error",
+          description: "Please check your input and try again.",
           variant: "destructive",
         })
         return
       }
 
+      // Create new user
+      console.log("Creating new user...")
       const hashedPassword = await bcrypt.hash(data.password, 10)
 
-      await db.user.create({
-        data: {
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
           name: data.name,
           email: data.email,
           password: hashedPassword,
-        },
+        }),
       })
 
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.message || "Failed to create account")
+      }
+
+      const newUser = await response.json()
+      console.log("User created successfully:", { id: newUser.id, email: newUser.email })
+
+      // Sign in the new user
+      console.log("Attempting to sign in...")
       const result = await signIn("credentials", {
         email: data.email,
         password: data.password,
         redirect: false,
       })
 
-      if (result?.error) {
+      if (!result?.ok) {
+        console.error("Sign in failed after registration:", result?.error)
         toast({
-          title: "Error",
-          description: "Something went wrong",
-          variant: "destructive",
+          title: "Account Created",
+          description: "Your account was created successfully. Please try logging in.",
+          variant: "default",
         })
+        router.push("/login")
         return
       }
 
+      console.log("Sign in successful, redirecting to dashboard...")
       router.push("/dashboard")
       router.refresh()
     } catch (error) {
+      console.error("Signup error:", error)
       toast({
         title: "Error",
-        description: "Something went wrong. Please try again.",
+        description: error instanceof Error ? error.message : "Something went wrong. Please try again.",
         variant: "destructive",
       })
     } finally {

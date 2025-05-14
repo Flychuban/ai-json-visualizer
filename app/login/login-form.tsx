@@ -14,12 +14,15 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input"
 import { toast } from "@/components/ui/use-toast"
 import { LoginSchema } from "@/lib/validations/auth"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { AlertCircle } from "lucide-react"
 
 type FormValues = z.infer<typeof LoginSchema>
 
 export function LoginForm() {
   const router = useRouter()
   const [isLoading, setIsLoading] = React.useState<boolean>(false)
+  const [authError, setAuthError] = React.useState<string | null>(null)
 
   const form = useForm<FormValues>({
     resolver: zodResolver(LoginSchema),
@@ -31,6 +34,7 @@ export function LoginForm() {
 
   async function onSubmit(data: FormValues) {
     setIsLoading(true)
+    setAuthError(null)
 
     try {
       const result = await signIn("credentials", {
@@ -40,17 +44,22 @@ export function LoginForm() {
       })
 
       if (result?.error) {
+        setAuthError("Invalid email or password. Please try again.")
         toast({
-          title: "Error",
-          description: "Invalid email or password",
+          title: "Authentication failed",
+          description: "Invalid email or password. Please try again.",
           variant: "destructive",
         })
         return
       }
 
-      router.push("/dashboard")
-      router.refresh()
+      if (result?.ok) {
+        router.push("/dashboard")
+        router.refresh()
+      }
     } catch (error) {
+      console.error("Login error:", error)
+      setAuthError("Something went wrong. Please try again.")
       toast({
         title: "Error",
         description: "Something went wrong. Please try again.",
@@ -62,11 +71,18 @@ export function LoginForm() {
   }
 
   const handleGithubLogin = () => {
+    setAuthError(null)
     signIn("github", { callbackUrl: "/dashboard" })
   }
 
   return (
     <div className="grid gap-6">
+      {authError && (
+        <Alert variant="destructive" className="mb-4">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{authError}</AlertDescription>
+        </Alert>
+      )}
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField
@@ -76,7 +92,16 @@ export function LoginForm() {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input placeholder="name@example.com" {...field} />
+                  <Input 
+                    placeholder="name@example.com" 
+                    {...field} 
+                    className={authError ? "border-red-500 focus-visible:ring-red-500" : ""}
+                    onChange={(e) => {
+                      field.onChange(e)
+                      setAuthError(null)
+                    }}
+                    disabled={isLoading}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -89,7 +114,17 @@ export function LoginForm() {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input type="password" placeholder="••••••••" {...field} />
+                  <Input 
+                    type="password" 
+                    placeholder="••••••••" 
+                    {...field}
+                    className={authError ? "border-red-500 focus-visible:ring-red-500" : ""}
+                    onChange={(e) => {
+                      field.onChange(e)
+                      setAuthError(null)
+                    }}
+                    disabled={isLoading}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
