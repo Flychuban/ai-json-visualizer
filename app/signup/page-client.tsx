@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { SignupForm } from "./signup-form"
+import { SignUpForm } from "./signup-form"
 import { motion } from "framer-motion"
 
 export default function SignupPageClient() {
@@ -150,7 +150,7 @@ export default function SignupPageClient() {
             <h1 className="text-2xl font-semibold tracking-tight">Create an account</h1>
             <p className="text-sm text-muted-foreground">Enter your details to create your account</p>
           </div>
-          <SignupForm />
+          <SignUpForm />
           <p className="px-8 text-center text-sm text-muted-foreground">
             Already have an account?{" "}
             <Link href="/login" className="underline underline-offset-4 hover:text-primary">
