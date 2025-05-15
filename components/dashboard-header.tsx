@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { LogOut, Settings, User } from "lucide-react"
 import { signOut, useSession } from "next-auth/react"
+import posthog from "posthog-js"
 
 import {
   DropdownMenu,
@@ -21,6 +22,10 @@ export function DashboardHeader() {
   const { data: session } = useSession()
 
   const handleLogout = async () => {
+    posthog.capture("user_logged_out", {
+      user_id: session?.user?.id,
+      user_email: session?.user?.email,
+    })
     await signOut({ redirect: false })
     router.push("/login")
   }

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { motion, AnimatePresence } from "framer-motion"
+import posthog from "posthog-js"
 
 // Sample extracted data - in a real app, this would come from your API
 const sampleData = {
@@ -58,6 +59,9 @@ export function JsonViewer() {
     if (!data) return
 
     navigator.clipboard.writeText(JSON.stringify(data, null, 2))
+    posthog.capture("json_copied", {
+      data_size: JSON.stringify(data).length,
+    })
     toast({
       title: "Copied to clipboard",
       description: "JSON data has been copied to your clipboard",
@@ -76,6 +80,10 @@ export function JsonViewer() {
     a.click()
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
+
+    posthog.capture("json_downloaded", {
+      data_size: JSON.stringify(data).length,
+    })
 
     toast({
       title: "Downloaded JSON",
