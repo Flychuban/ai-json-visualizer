@@ -43,6 +43,11 @@ export function FileUploader() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       setFile(e.target.files[0])
+      // Dispatch event when file is selected
+      const event = new CustomEvent("fileSelected", {
+        detail: { fileName: e.target.files[0].name }
+      })
+      window.dispatchEvent(event)
     }
   }
 
@@ -55,6 +60,11 @@ export function FileUploader() {
     if (fileInputRef.current) {
       fileInputRef.current.value = ""
     }
+    // Dispatch event when file is removed
+    const event = new CustomEvent("fileSelected", {
+      detail: { fileName: null }
+    })
+    window.dispatchEvent(event)
   }
 
   const handleProcessFile = async () => {

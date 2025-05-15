@@ -40,10 +40,17 @@ export function JsonViewer() {
       }
     }
 
+    const handleFileSelected = (event: CustomEvent) => {
+      // Reset data when a new file is selected or removed
+      setData(null)
+    }
+
     window.addEventListener("fileProcessed", handleFileProcessed as EventListener)
+    window.addEventListener("fileSelected", handleFileSelected as EventListener)
 
     return () => {
       window.removeEventListener("fileProcessed", handleFileProcessed as EventListener)
+      window.removeEventListener("fileSelected", handleFileSelected as EventListener)
     }
   }, [])
 
