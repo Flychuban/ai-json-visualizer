@@ -30,6 +30,11 @@ export function FileUploader() {
       const droppedFile = e.dataTransfer.files[0]
       if (droppedFile.type === "text/plain") {
         setFile(droppedFile)
+        // Dispatch event when file is dropped
+        const event = new CustomEvent("fileSelected", {
+          detail: { fileName: droppedFile.name }
+        })
+        window.dispatchEvent(event)
       } else {
         toast({
           title: "Invalid file type",
