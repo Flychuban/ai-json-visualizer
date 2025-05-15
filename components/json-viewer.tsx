@@ -118,7 +118,11 @@ export function JsonViewer() {
                 >
                   <span className="text-green-600">"{key}"</span>
                   <span className="text-gray-500">: </span>
-                  {renderJson(value, level + 1)}
+                  {value === null ? (
+                    <span className="text-red-500 italic">None</span>
+                  ) : (
+                    renderJson(value, level + 1)
+                  )}
                   {index < array.length - 1 && <span className="text-gray-500">,</span>}
                 </motion.div>
               ))}

@@ -19,18 +19,22 @@ export async function POST(req: Request) {
     }
 
     // Create a prompt that will help extract structured data
-    const prompt = `Extract the following information from the text and return it as a JSON object:
+    const prompt = `Extract the following information from the text and return it as a JSON object. If any field is not found in the text, set it to null:
     - fullName (string)
     - age (number)
     - jobTitle (string)
     - company (string)
     - location (string)
     - hobbies (array of strings)
+    - favouriteColor (must be one of: 'green', 'yellow', 'red')
+    - linkedin (URL)
+    - graduationYear (number)
+    - favouriteLanguage (string)
 
     Text to analyze:
     ${text}
 
-    Return ONLY the JSON object, nothing else.`
+    Return ONLY the JSON object, nothing else. Make sure to set any missing fields to null.`
 
     // Use streamObject to get structured data
     const result = streamObject({
