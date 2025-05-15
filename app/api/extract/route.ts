@@ -19,22 +19,27 @@ export async function POST(req: Request) {
     }
 
     // Create a prompt that will help extract structured data
-    const prompt = `Extract the following information from the text and return it as a JSON object. If any field is not found in the text, set it to null:
-    - fullName (string)
-    - age (number)
-    - jobTitle (string)
-    - company (string)
-    - location (string)
-    - hobbies (array of strings)
-    - favouriteColor (must be one of: 'green', 'yellow', 'red')
-    - linkedin (URL)
-    - graduationYear (number)
-    - favouriteLanguage (string)
+    const prompt = `Extract and normalize the following information from the text and return it as a JSON object. If any field is not found in the text, set it to null. Handle any typos or variations in the text:
+
+    - fullName (string): Extract the person's full name, correcting any spelling mistakes
+    - age (number): Extract the age as a number, handling any typos in the number
+    - jobTitle (string): Extract the job title, normalizing common variations and fixing typos
+    - company (string): Extract the company name, correcting any spelling mistakes
+    - location (string): Extract the location, normalizing city and country names
+    - hobbies (array of strings): Extract hobbies as an array, normalizing common variations
+    - favouriteColor (must be one of: 'green', 'yellow', 'red'): Extract and normalize to one of these colors, handling variations like 'favorite', 'fav', etc.
+    - linkedin (URL): Extract the LinkedIn URL, ensuring it's a valid URL format
+    - graduationYear (number): Extract the graduation year as a number, handling any typos
+    - favouriteLanguage (string): Extract the programming language, normalizing common variations
 
     Text to analyze:
     ${text}
 
-    Return ONLY the JSON object, nothing else. Make sure to set any missing fields to null.`
+    Return ONLY the JSON object, nothing else. Make sure to:
+    1. Set any missing fields to null
+    2. Correct any typos in the extracted data
+    3. Normalize the data to match the expected format
+    4. Handle variations in how the information is presented`
 
     // Use streamObject to get structured data
     const result = streamObject({
