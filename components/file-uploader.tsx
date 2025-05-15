@@ -57,31 +57,75 @@ export function FileUploader() {
     }
   }
 
-  const handleProcessFile = () => {
+  const handleProcessFile = async () => {
     if (!file) return
 
     setIsLoading(true)
 
-    // Simulate processing
-    setTimeout(() => {
-      setIsLoading(false)
-      // In a real app, you'd send the file to your API
-      // and handle the response
+    try {
+      // Read the file content
+      const text = await file.text()
 
-      // Trigger the JSON viewer to update
-      const event = new CustomEvent("fileProcessed", {
-        detail: {
-          fileName: file.name,
-          fileSize: file.size,
+      // Make the API request
+      const response = await fetch("/api/extract", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
+        body: JSON.stringify({ text }),
       })
-      window.dispatchEvent(event)
+
+      if (!response.ok) {
+        throw new Error("Failed to process file")
+      }
+
+      // Get the response as a stream
+      const reader = response.body?.getReader()
+      if (!reader) {
+        throw new Error("No reader available")
+      }
+
+      let result = ""
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        // Convert the Uint8Array to a string
+        const chunk = new TextDecoder().decode(value)
+        result += chunk
+
+        try {
+          // Try to parse the accumulated result as JSON
+          const jsonData = JSON.parse(result)
+          // Dispatch event with the parsed data
+          const event = new CustomEvent("fileProcessed", {
+            detail: {
+              data: jsonData,
+              fileName: file.name,
+              fileSize: file.size,
+            },
+          })
+          window.dispatchEvent(event)
+        } catch (e) {
+          // If parsing fails, continue accumulating chunks
+          continue
+        }
+      }
 
       toast({
         title: "File processed successfully",
         description: `Extracted data from ${file.name}`,
       })
-    }, 2000)
+    } catch (error) {
+      console.error("Error processing file:", error)
+      toast({
+        title: "Error processing file",
+        description: "There was an error processing your file. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (

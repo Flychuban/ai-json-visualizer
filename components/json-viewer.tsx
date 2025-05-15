@@ -34,20 +34,16 @@ export function JsonViewer() {
   const [isLoading, setIsLoading] = React.useState(false)
 
   React.useEffect(() => {
-    const handleFileProcessed = () => {
-      setIsLoading(true)
-
-      // Simulate API response delay
-      setTimeout(() => {
-        setData(sampleData)
-        setIsLoading(false)
-      }, 500)
+    const handleFileProcessed = (event: CustomEvent) => {
+      if (event.detail.data) {
+        setData(event.detail.data)
+      }
     }
 
-    window.addEventListener("fileProcessed", handleFileProcessed)
+    window.addEventListener("fileProcessed", handleFileProcessed as EventListener)
 
     return () => {
-      window.removeEventListener("fileProcessed", handleFileProcessed)
+      window.removeEventListener("fileProcessed", handleFileProcessed as EventListener)
     }
   }, [])
 
