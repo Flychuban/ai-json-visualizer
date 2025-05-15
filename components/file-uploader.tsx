@@ -6,6 +6,7 @@ import { toast } from "@/components/ui/use-toast"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { motion } from "framer-motion"
+import posthog from "posthog-js"
 
 export function FileUploader() {
   const [isDragging, setIsDragging] = React.useState(false)
@@ -30,12 +31,21 @@ export function FileUploader() {
       const droppedFile = e.dataTransfer.files[0]
       if (droppedFile.type === "text/plain") {
         setFile(droppedFile)
+        posthog.capture("file_uploaded", {
+          method: "drag_and_drop",
+          file_name: droppedFile.name,
+          file_size: droppedFile.size,
+        })
         // Dispatch event when file is dropped
         const event = new CustomEvent("fileSelected", {
           detail: { fileName: droppedFile.name }
         })
         window.dispatchEvent(event)
       } else {
+        posthog.capture("file_upload_error", {
+          error: "invalid_file_type",
+          file_type: droppedFile.type,
+        })
         toast({
           title: "Invalid file type",
           description: "Please upload a .txt file",
@@ -47,10 +57,16 @@ export function FileUploader() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      setFile(e.target.files[0])
+      const selectedFile = e.target.files[0]
+      setFile(selectedFile)
+      posthog.capture("file_uploaded", {
+        method: "file_input",
+        file_name: selectedFile.name,
+        file_size: selectedFile.size,
+      })
       // Dispatch event when file is selected
       const event = new CustomEvent("fileSelected", {
-        detail: { fileName: e.target.files[0].name }
+        detail: { fileName: selectedFile.name }
       })
       window.dispatchEvent(event)
     }
@@ -61,6 +77,12 @@ export function FileUploader() {
   }
 
   const handleRemoveFile = () => {
+    if (file) {
+      posthog.capture("file_removed", {
+        file_name: file.name,
+        file_size: file.size,
+      })
+    }
     setFile(null)
     if (fileInputRef.current) {
       fileInputRef.current.value = ""
@@ -76,6 +98,10 @@ export function FileUploader() {
     if (!file) return
 
     setIsLoading(true)
+    posthog.capture("file_processing_started", {
+      file_name: file.name,
+      file_size: file.size,
+    })
 
     try {
       // Read the file content
@@ -112,6 +138,11 @@ export function FileUploader() {
         try {
           // Try to parse the accumulated result as JSON
           const jsonData = JSON.parse(result)
+          posthog.capture("file_processed_successfully", {
+            file_name: file.name,
+            file_size: file.size,
+            data_size: JSON.stringify(jsonData).length,
+          })
           // Dispatch event with the parsed data
           const event = new CustomEvent("fileProcessed", {
             detail: {
@@ -133,6 +164,11 @@ export function FileUploader() {
       })
     } catch (error) {
       console.error("Error processing file:", error)
+      posthog.capture("file_processing_error", {
+        file_name: file.name,
+        file_size: file.size,
+        error: error instanceof Error ? error.message : "Unknown error",
+      })
       toast({
         title: "Error processing file",
         description: "There was an error processing your file. Please try again.",
