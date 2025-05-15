@@ -4,8 +4,20 @@ import { FileUploader } from "@/components/file-uploader"
 import { JsonViewer } from "@/components/json-viewer"
 
 export const metadata: Metadata = {
-  title: "Dashboard | JSONonify",
-  description: "Upload and extract structured data from text files",
+  title: "Dashboard",
+  description: "Upload your text files and extract structured data using our AI-powered JSON converter. View, copy, and download your extracted data in real-time.",
+  openGraph: {
+    title: "Dashboard | JSONonify",
+    description: "Upload your text files and extract structured data using our AI-powered JSON converter. View, copy, and download your extracted data in real-time.",
+    images: [
+      {
+        url: "/dashboard-og.png",
+        width: 1200,
+        height: 630,
+        alt: "JSONonify Dashboard - AI Text Extraction"
+      }
+    ]
+  }
 }
 
 export default function DashboardPage() {
