@@ -1,36 +1,37 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🤖 AI JSON Visualizer
 
-## Getting Started
+A powerful web application that uses AI to extract structured data from text files and visualize it in a beautiful JSON format. Built with the T3 Stack and modern web technologies.
 
-First, run the development server:
+[![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![tRPC](https://img.shields.io/badge/tRPC-2596BE?style=for-the-badge&logo=trpc&logoColor=white)](https://trpc.io/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## ✨ Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- 🔐 **Authentication**: Secure login with email/password and GitHub OAuth
+- 📤 **File Upload**: Drag-and-drop or click to upload .txt files
+- 🤖 **AI-Powered**: Extracts structured data using advanced AI models
+- 🎨 **Beautiful UI**: Clean, modern interface with shadcn/ui components
+- 📊 **JSON Visualization**: Interactive JSON viewer with copy and download options
+- 📱 **Responsive Design**: Works seamlessly on all devices
+- 📈 **Analytics**: Track usage with PostHog integration
+- 🔍 **SEO Optimized**: Better visibility in search engines
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🚀 Tech Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Frontend**: Next.js 14, TypeScript, Tailwind CSS, shadcn/ui
+- **Backend**: tRPC, Prisma, PostgreSQL (Neon)
+- **Authentication**: NextAuth.js
+- **AI Integration**: Vercel AI SDK
+- **Analytics**: PostHog
+- **Package Manager**: pnpm
 
-## Learn More
+<!-- Screenshots -->
 
-To learn more about Next.js, take a look at the following resources:
+![Screenshot 1](./public/screenshot1.png)
+![Screenshot 2](./public/screenshot2.png)
+![Screenshot 3](./public/screenshot3.png)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Project Link: [https://ai-json-visualizer.vercel.app](https://ai-json-visualizer.vercel.app)
